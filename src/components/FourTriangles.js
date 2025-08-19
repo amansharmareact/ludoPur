@@ -10,7 +10,7 @@ import Fireworks from '../assets/animation/firework.json';
 import LottieView from 'lottie-react-native';
 import Svg, {Polygon} from 'react-native-svg';
 
-const FourTriangles = ({player1, player2, player3, player4}) => {
+const TwoTriangles = ({player1, player2}) => {
   const size = 300;
   const isFirework = useSelector(selectFireworks);
   const [blast, setBlast] = useState(false);
@@ -31,16 +31,9 @@ const FourTriangles = ({player1, player2, player3, player4}) => {
     () => [
       {
         player: player1,
-        top: 55,
-        left: 15,
-        pieceColor: Colors.red,
-        translate: 'translateX',
-      },
-      {
-        player: player3,
         bottom: 52,
         left: 15,
-        pieceColor: Colors.yellow,
+        pieceColor: Colors.red,
         translate: 'translateX',
       },
       {
@@ -50,22 +43,15 @@ const FourTriangles = ({player1, player2, player3, player4}) => {
         pieceColor: Colors.green,
         translate: 'translateY',
       },
-      {
-        player: player4,
-        top: 20,
-        right: -2,
-        pieceColor: Colors.blue,
-        translate: 'translateY',
-      },
     ],
-    [player1, player2, player3, player4],
+    [player1, player2],
   );
 
   const renderPlayerPieces = useCallback(
     (data, index) => (
       <PlayerPieces
         key={index}
-        player={data.player.filter(item => item.travelCount === 57)}
+       player={(data.player ?? []).filter(item => item.travelCount === 57)}
         style={{
           top: data.top,
           bottom: data.bottom,
@@ -92,21 +78,14 @@ const FourTriangles = ({player1, player2, player3, player4}) => {
         />
       )}
 
+      {/* Only 2 triangles (Red bottom, Green left) */}
       <Svg height={size} width={size - 5}>
         <Polygon
-          points={`0,0 ${size / 2},${size / 2} ${size},0`}
-          fill={Colors.yellow}
-        />
-        <Polygon
-          points={`${size},0 ${size},${size} ${size / 2},${size / 2}`}
-          fill={Colors.blue}
-        />
-        <Polygon
-          points={`0,${size} ${size / 2},${size / 2} ${size},${size}`}
+          points={`0,${size} ${size / 2},${size / 2} ${size},${size}`} // Red bottom
           fill={Colors.red}
         />
         <Polygon
-          points={`0,0 ${size / 2},${size / 2} 0,${size}`}
+          points={`0,0 ${size / 2},${size / 2} 0,${size}`} // Green left
           fill={Colors.green}
         />
       </Svg>
@@ -168,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(FourTriangles);
+export default memo(TwoTriangles);

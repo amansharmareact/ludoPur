@@ -6,49 +6,56 @@ import {
   Image,
   Animated,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {deviceHeight, deviceWidth} from '../constants/Scaling';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { deviceHeight, deviceWidth } from '../constants/Scaling';
 import Wrapper from '../components/Wrapper';
 import MenuIcon from '../assets/images/menu.png';
-import {playSound} from '../helpers/SoundUtility';
+import { playSound } from '../helpers/SoundUtility';
 import MenuModal from '../components/MenuModal';
 import StartGame from '../assets/images/start.png';
-import {useIsFocused} from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import {
   selectDiceTouch,
   selectPlayer1,
   selectPlayer2,
-  selectPlayer3,
-  selectPlayer4,
 } from '../redux/reducers/gameSelectors';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import WinModal from '../components/WinModal';
 import Dice from '../components/Dice';
-import {Colors} from '../constants/Colors';
+import { Colors } from '../constants/Colors';
 import Pocket from '../components/Pocket';
-import {Plot1Data, Plot2Data, Plot3Data, Plot4Data} from '../helpers/PlotData';
+import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
 import VerticalPath from '../components/path/VerticalPath';
 import HorizontalPath from '../components/path/HorizontalPath';
 import FourTriangles from '../components/FourTriangles';
 
-const LudoBoardScreen = () => {
+const LudoBoardScreen = ({ duration = 600, onTimeUp }) => {
   const player1 = useSelector(selectPlayer1);
   const player2 = useSelector(selectPlayer2);
-  const player3 = useSelector(selectPlayer3);
-  const player4 = useSelector(selectPlayer4);
   const isDiceTouch = useSelector(selectDiceTouch);
   const winner = useSelector(state => state.game.winner);
-
+  const [timeLeft, setTimeLeft] = useState(duration);
   const isFocused = useIsFocused();
   const opacity = useRef(new Animated.Value(1)).current;
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [showStartImage, setShowStartImage] = useState(false);
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      onTimeUp?.(); // End game callback
+      return;
+    }
 
-  const handleMenuPress = useCallback(() => {
-    playSound('ui');
-    setMenuVisible(true);
-  }, []);
+    const interval = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  // Convert to mm:ss
+  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const seconds = String(timeLeft % 60).padStart(2, "0");
 
   useEffect(() => {
     if (isFocused) {
@@ -83,73 +90,65 @@ const LudoBoardScreen = () => {
   }, [isFocused]);
 
   return (
-    <Wrapper>
-      <TouchableOpacity style={styles.menuIcon} onPress={handleMenuPress}>
-        <Image source={MenuIcon} style={styles.menuIconImage} />
-      </TouchableOpacity>
-
-      <View style={styles.container}>
-        <View
-          style={styles.flexRow}
-          pointerEvents={isDiceTouch ? 'none' : 'auto'}>
-          <Dice color={Colors.green} player={2} data={player2} />
-          <Dice color={Colors.yellow} player={3} rotate data={player3} />
+    <View style={{ position: "relative" }}>
+      <Wrapper>
+        <View style={styles.Timercontainer}>
+          <Text style={styles.timerText}>{minutes}:{seconds}</Text>
         </View>
-
-        <View style={styles.ludoBoard}>
-          <View style={styles.plotContainer}>
-            <Pocket color={Colors.green} player={2} data={player2} />
-            <VerticalPath cells={Plot2Data} color={Colors.yellow} />
-            <Pocket color={Colors.yellow} player={3} data={player3} />
+        <View style={styles.container}>
+          <View
+            style={[styles.flexRow]}
+            pointerEvents={isDiceTouch ? 'none' : 'auto'}>
+            <Dice color={Colors.yellow} player={1} data={player1} />
           </View>
 
-          <View style={styles.pathContainer}>
-            <HorizontalPath cells={Plot1Data} color={Colors.green} />
-            <FourTriangles
-              player1={player1}
-              player2={player2}
-              player3={player3}
-              player4={player4}
-            />
-            <HorizontalPath cells={Plot3Data} color={Colors.blue} />
+          <View style={styles.ludoBoard}>
+            <View style={styles.plotContainer}>
+              <Pocket color={Colors.green} player={0} data={null} />
+              <VerticalPath cells={Plot2Data} color={Colors.yellow} />
+              <Pocket color={Colors.yellow} player={2} data={player2} />
+            </View>
+
+            <View style={styles.pathContainer}>
+              <HorizontalPath cells={Plot1Data} color={Colors.green} />
+              <FourTriangles
+                player1={player1}
+                player2={player2}
+                player3={null}
+                player4={null}
+              />
+              <HorizontalPath cells={Plot3Data} color={Colors.blue} />
+            </View>
+
+            <View style={styles.plotContainer}>
+              <Pocket color={Colors.red} data={player1} player={1} />
+              <VerticalPath cells={Plot4Data} color={Colors.red} />
+              <Pocket color={Colors.blue} data={null} player={0} />
+            </View>
           </View>
 
-          <View style={styles.plotContainer}>
-            <Pocket color={Colors.red} data={player1} player={1} />
-            <VerticalPath cells={Plot4Data} color={Colors.red} />
-            <Pocket color={Colors.blue} data={player4} player={4} />
+          <View
+            style={styles.flexRow}
+            pointerEvents={isDiceTouch ? 'none' : 'auto'}>
+            <Dice color={Colors.red} player={2} data={player2} />
           </View>
         </View>
 
-        <View
-          style={styles.flexRow}
-          pointerEvents={isDiceTouch ? 'none' : 'auto'}>
-          <Dice color={Colors.red} player={1} data={player1} />
-          <Dice color={Colors.blue} rotate player={4} data={player4} />
-        </View>
-      </View>
+        {showStartImage && (
+          <Animated.Image
+            source={StartGame}
+            style={{
+              width: deviceWidth * 0.5,
+              height: deviceWidth * 0.2,
+              position: 'absolute',
+              opacity,
+            }}
+          />
+        )}
 
-      {showStartImage && (
-        <Animated.Image
-          source={StartGame}
-          style={{
-            width: deviceWidth * 0.5,
-            height: deviceWidth * 0.2,
-            position: 'absolute',
-            opacity,
-          }}
-        />
-      )}
-
-      {menuVisible && (
-        <MenuModal
-          onPressHide={() => setMenuVisible(false)}
-          visible={menuVisible}
-        />
-      )}
-
-      {winner != null && <WinModal winner={winner} />}
-    </Wrapper>
+        {winner != null && <WinModal winner={winner} />}
+      </Wrapper>
+    </View>
   );
 };
 
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   flexRow: {
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 30,
@@ -194,6 +193,19 @@ const styles = StyleSheet.create({
     height: '20%',
     justifyContent: 'space-between',
     backgroundColor: '#1E5162',
+  },
+  Timercontainer: {
+    padding: 10,
+    borderRadius: 8,
+    alignSelf: "center",
+    marginBottom: 10,
+    position: "absolute",
+    top: 40
+  },
+  timerText: {
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 

@@ -1,15 +1,15 @@
-import {View, Text, StyleSheet, Alert} from 'react-native';
-import React, {memo} from 'react';
-import {useDispatch} from 'react-redux';
-import {Colors} from '../constants/Colors';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import React, { memo } from 'react';
+import { useDispatch } from 'react-redux';
+import { Colors } from '../constants/Colors';
 import Pile from './Pile';
 import {
   unfreezeDice,
   updatePlayerPieceValue,
 } from '../redux/reducers/gameSlice';
-import {startingPoints} from '../helpers/PlotData';
+import { startingPoints } from '../helpers/PlotData';
 
-const Pocket = ({color, player, data}) => {
+const Pocket = ({ color, player, data }) => {
   const dispatch = useDispatch();
 
   const handlePress = async value => {
@@ -42,7 +42,7 @@ const Pocket = ({color, player, data}) => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: color}]}>
+    <View style={[styles.container, { backgroundColor: color }]}>
       <View style={styles.childFrame}>
         <View style={styles.flexRow}>
           <Plot
@@ -61,7 +61,7 @@ const Pocket = ({color, player, data}) => {
           />
         </View>
 
-        <View style={[styles.flexRow, {marginTop: 20}]}>
+        <View style={[styles.flexRow, { marginTop: 20 }]}>
           <Plot
             pieceNo={2}
             player={player}
@@ -82,9 +82,9 @@ const Pocket = ({color, player, data}) => {
   );
 };
 
-const Plot = ({pieceNo, player, color, data, handlePress}) => {
+const Plot = ({ pieceNo, player, color, data, handlePress }) => {
   return (
-    <View style={[styles.plot, {backgroundColor: color}]}>
+    <View style={[styles.plot, { backgroundColor: color }]}>
       {data && data[pieceNo]?.pos === 0 && (
         <Pile
           player={player}
