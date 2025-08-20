@@ -4,6 +4,8 @@ import LudoBoardScreen from '../screens/LudoBoardScreen';
 import SplashScreen from '../screens/SplashScreen';
 import HomeScreen from '../screens/HomeScreen';
 import {navigationRef} from '../helpers/NavigationUtil';
+import AdminLogin from '../screens/AdminLogin';
+import AdminDashboard from '../screens/AdminDashboard';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +28,20 @@ const Navigation = () => {
         <Stack.Screen
           name="LudoBoardScreen"
           component={LudoBoardScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+          <Stack.Screen
+          name="AdminDashboard"
+          component={AdminDashboard}
+          options={{
+            animation: 'fade',
+          }}
+        />
+         <Stack.Screen
+          name="AdminLogin"
+          component={AdminLogin}
           options={{
             animation: 'fade',
           }}

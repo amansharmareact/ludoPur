@@ -138,19 +138,15 @@ const HomeScreen = () => {
     //   Alert.alert("Invalid Code", "Please enter a 6-digit code");
     //   return;
     // }
+    startGame(true);
 
     try {
-      // Example: hardcoded admin OTP = 123456
-      // Replace with API call like: 
-      // const response = await fetch("https://your-api.com/verify-otp", { method: "POST", body: JSON.stringify({ code }) });
-      // const result = await response.json();
-
-      startGame(true);
-      if (code === "123456") {   // ✅ replace with API response check
-        Alert.alert("Success", "Code Verified ✅");
-      } else {
-        Alert.alert("Error", "Invalid Code ❌");
-      }
+      // const response = await api("/join-room", { method: "POST", body: JSON.stringify({ code }) });
+      // if (response.ok) {
+      //   startGame(true);
+      // } else {
+      //   Alert.alert("Error", "Invalid Code ❌");
+      // }
     } catch (error) {
       Alert.alert("Error", "Something went wrong while verifying code");
     }
@@ -174,6 +170,7 @@ const HomeScreen = () => {
         />
       </View>
       {renderButton('START GAME', verifyCodeAndStart)}
+      {renderButton('LOGIN AS ADMIN', () => { navigate('AdminLogin') })}
 
       <Animated.View
         style={[
@@ -196,7 +193,6 @@ const HomeScreen = () => {
           />
         </Pressable>
       </Animated.View>
-
       <Text style={styles.artist}>Made By - Aman Sharma ™</Text>
     </Wrapper>
   );

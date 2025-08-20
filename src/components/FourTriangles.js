@@ -1,16 +1,16 @@
-import {View, StyleSheet} from 'react-native';
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
-import {Colors} from '../constants/Colors';
-import {deviceHeight, deviceWidth} from '../constants/Scaling';
-import {useDispatch, useSelector} from 'react-redux';
-import {selectFireworks} from '../redux/reducers/gameSelectors';
-import {updateFireworks} from '../redux/reducers/gameSlice';
+import { View, StyleSheet } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Colors } from '../constants/Colors';
+import { deviceHeight, deviceWidth } from '../constants/Scaling';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFireworks } from '../redux/reducers/gameSelectors';
+import { updateFireworks } from '../redux/reducers/gameSlice';
 import Pile from './Pile';
 import Fireworks from '../assets/animation/firework.json';
 import LottieView from 'lottie-react-native';
-import Svg, {Polygon} from 'react-native-svg';
+import Svg, { Polygon } from 'react-native-svg';
 
-const TwoTriangles = ({player1, player2}) => {
+const TwoTriangles = ({ player1, player2 }) => {
   const size = 300;
   const isFirework = useSelector(selectFireworks);
   const [blast, setBlast] = useState(false);
@@ -40,7 +40,7 @@ const TwoTriangles = ({player1, player2}) => {
         player: player2,
         top: 20,
         left: -2,
-        pieceColor: Colors.green,
+        pieceColor: Colors.yellow,
         translate: 'translateY',
       },
     ],
@@ -51,7 +51,7 @@ const TwoTriangles = ({player1, player2}) => {
     (data, index) => (
       <PlayerPieces
         key={index}
-       player={(data.player ?? []).filter(item => item.travelCount === 57)}
+        player={(data.player ?? []).filter(item => item.travelCount === 57)}
         style={{
           top: data.top,
           bottom: data.bottom,
@@ -81,21 +81,30 @@ const TwoTriangles = ({player1, player2}) => {
       {/* Only 2 triangles (Red bottom, Green left) */}
       <Svg height={size} width={size - 5}>
         <Polygon
-          points={`0,${size} ${size / 2},${size / 2} ${size},${size}`} // Red bottom
+          points={`0,0 ${size / 2},${size / 2} ${size},0`}
+          fill={Colors.yellow}
+        />
+        <Polygon
+          points={`${size},0 ${size},${size} ${size / 2},${size / 2}`}
+          fill={Colors.blue}
+        />
+        <Polygon
+          points={`0,${size} ${size / 2},${size / 2} ${size},${size}`}
           fill={Colors.red}
         />
         <Polygon
-          points={`0,0 ${size / 2},${size / 2} 0,${size}`} // Green left
+          points={`0,0 ${size / 2},${size / 2} 0,${size}`}
           fill={Colors.green}
         />
       </Svg>
 
+
       {playersData.map(renderPlayerPieces)}
-    </View>
+    </View >
   );
 };
 
-const PlayerPieces = React.memo(({player, style, pieceColor, translate}) => {
+const PlayerPieces = React.memo(({ player, style, pieceColor, translate }) => {
   return (
     <View style={[styles.container, style]}>
       {player.map((piece, index) => (
@@ -106,12 +115,12 @@ const PlayerPieces = React.memo(({player, style, pieceColor, translate}) => {
             zIndex: 99,
             position: 'absolute',
             bottom: 0,
-            transform: [{scale: 0.5}, {[translate]: 14 * index}],
+            transform: [{ scale: 0.5 }, { [translate]: 14 * index }],
           }}>
           <Pile
             cell={true}
             player={player}
-            onPress={() => {}}
+            onPress={() => { }}
             pieceId={piece.id}
             color={pieceColor}
           />

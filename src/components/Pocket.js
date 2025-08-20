@@ -18,14 +18,8 @@ const Pocket = ({ color, player, data }) => {
       case 'A':
         playerNo = 'player1';
         break;
-      case 'B':
-        playerNo = 'player2';
-        break;
-      case 'C':
-        playerNo = 'player3';
-        break;
       default:
-        playerNo = 'player4';
+        playerNo = 'player2';
         break;
     }
 

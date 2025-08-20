@@ -37,8 +37,6 @@ const LudoBoardScreen = ({ duration = 600, onTimeUp }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
   const isFocused = useIsFocused();
   const opacity = useRef(new Animated.Value(1)).current;
-
-  const [menuVisible, setMenuVisible] = useState(false);
   const [showStartImage, setShowStartImage] = useState(false);
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -114,8 +112,6 @@ const LudoBoardScreen = ({ duration = 600, onTimeUp }) => {
               <FourTriangles
                 player1={player1}
                 player2={player2}
-                player3={null}
-                player4={null}
               />
               <HorizontalPath cells={Plot3Data} color={Colors.blue} />
             </View>

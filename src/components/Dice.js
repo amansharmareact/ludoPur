@@ -7,19 +7,19 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   selectCurrentPlayerChance,
   selectDiceNo,
   selectDiceRolled,
 } from '../redux/reducers/gameSelectors';
-import {BackgroundImage} from '../helpers/GetIcons';
+import { BackgroundImage } from '../helpers/GetIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import Arrow from '../assets/images/arrow.png';
 import LottieView from 'lottie-react-native';
 import DiceRoll from '../assets/animation/diceroll.json';
-import {playSound} from '../helpers/SoundUtility';
+import { playSound } from '../helpers/SoundUtility';
 import {
   enableCellSelection,
   enablePileSelection,
@@ -27,9 +27,10 @@ import {
   updatePlayerChance,
 } from '../redux/reducers/gameSlice';
 
-const Dice = React.memo(({color, rotate, player, data}) => {
+const Dice = React.memo(({ color, rotate, player, data }) => {
   const dispatch = useDispatch();
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
+  console.log(currentPlayerChance, "currentPlayerChance")
   const isDiceRolled = useSelector(selectDiceRolled);
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(
@@ -70,7 +71,7 @@ const Dice = React.memo(({color, rotate, player, data}) => {
     playSound('dice_roll');
     setDiceRolling(true);
     await delay(800);
-    dispatch(updateDiceNo({diceNo: newDiceNo}));
+    dispatch(updateDiceNo({ diceNo: newDiceNo }));
     setDiceRolling(false);
 
     const isAnyPieceAlive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
@@ -78,14 +79,14 @@ const Dice = React.memo(({color, rotate, player, data}) => {
 
     if (isAnyPieceAlive == -1) {
       if (newDiceNo == 6) {
-        dispatch(enablePileSelection({playerNo: player}));
+        dispatch(enablePileSelection({ playerNo: player }));
       } else {
         let chancePlayer = player + 1;
         if (chancePlayer > 4) {
           chancePlayer = 1;
         }
         await delay(600);
-        dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+        dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
       }
     } else {
       const canMove = playerPieces.some(
@@ -97,30 +98,27 @@ const Dice = React.memo(({color, rotate, player, data}) => {
         (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
         (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)
       ) {
-        let chancePlayer = player + 1;
-        if (chancePlayer > 4) {
-          chancePlayer = 1;
-        }
+      let chancePlayer = player === 1 ? 2 : 1;
         await delay(600);
-        dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+        dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
         return;
       }
 
       if (newDiceNo == 6) {
-        dispatch(enablePileSelection({playerNo: player}));
+        dispatch(enablePileSelection({ playerNo: player }));
       }
-      dispatch(enableCellSelection({playerNo: player}));
+      dispatch(enableCellSelection({ playerNo: player }));
     }
   };
 
   return (
-    <View style={[styles.flexRow, {transform: [{scaleX: rotate ? -1 : 1}]}]}>
+    <View style={[styles.flexRow, { transform: [{ scaleX: rotate ? -1 : 1 }] }]}>
       <View style={styles.border1}>
         <LinearGradient
           style={styles.linearGradient}
           colors={['#0052be', '#5f9fcb', '#97c6c9']}
-          start={{x: 0, y: 0.5}}
-          end={{x: 1, y: 0.5}}>
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}>
           <View style={styles.pileContainer}>
             <Image source={pileIcon} style={styles.pileIcon} />
           </View>
@@ -147,8 +145,8 @@ const Dice = React.memo(({color, rotate, player, data}) => {
       </View>
 
       {currentPlayerChance === player && !isDiceRolled ? (
-        <Animated.View style={{transform: [{translateX: arrowAnim}]}}>
-          <Image source={Arrow} style={{width: 30, height: 30}} />
+        <Animated.View style={{ transform: [{ translateX: arrowAnim }] }}>
+          <Image source={Arrow} style={{ width: 30, height: 30 }} />
         </Animated.View>
       ) : null}
 

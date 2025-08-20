@@ -2,7 +2,7 @@ export const selectCurrentPositions = state => state.game.currentPositions;
 export const selectCurrentPlayerChance = state => state.game.chancePlayer;
 export const selectDiceRolled = state => state.game.isDiceRolled;
 export const selectDiceNo = state => state.game.diceNo;
-
+    
 export const selectPlayer1 = state => state.game.player1;
 export const selectPlayer2 = state => state.game.player2;
 
