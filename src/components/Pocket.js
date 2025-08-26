@@ -14,6 +14,7 @@ const Pocket = ({ color, player, data }) => {
 
   const handlePress = async value => {
     let playerNo = value?.id?.slice(0, 1);
+
     switch (playerNo) {
       case 'A':
         playerNo = 'player1';
@@ -31,8 +32,9 @@ const Pocket = ({ color, player, data }) => {
         travelCount: 1,
       }),
     );
-
+    
     dispatch(unfreezeDice());
+ 
   };
 
   return (

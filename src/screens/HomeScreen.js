@@ -22,6 +22,8 @@ import { navigate } from '../helpers/NavigationUtil';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentPositions } from '../redux/reducers/gameSelectors';
 import { resetGame } from '../redux/reducers/gameSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../axios';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -30,6 +32,7 @@ const HomeScreen = () => {
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
   const isFocused = useIsFocused();
   const [code, setCode] = useState("");
+  const [player1, setPlayer1] = useState("");
 
   const handleChange = (text) => {
     // Allow only numbers and limit to 6 digits
@@ -134,21 +137,26 @@ const HomeScreen = () => {
   }, []);
 
   const verifyCodeAndStart = async () => {
-    // if (code.length !== 6) {
-    //   Alert.alert("Invalid Code", "Please enter a 6-digit code");
-    //   return;
-    // }
-    startGame(true);
-
+    if (code.length !== 6 ) {
+      Alert.alert("Invalid Code", "Please enter a 6-digit code");
+      return;
+    }
+    if (player1=="") {
+      Alert.alert("Invalid player name", "Please enter Names");
+      return;
+    }
     try {
-      // const response = await api("/join-room", { method: "POST", body: JSON.stringify({ code }) });
-      // if (response.ok) {
-      //   startGame(true);
-      // } else {
-      //   Alert.alert("Error", "Invalid Code ❌");
-      // }
+      const response = await api.post("/join-room",{code :code,playerId:player1});
+      if (response.data && response.data.success) {
+       await AsyncStorage.setItem("roomDetails",JSON.stringify(response.data.room))
+        startGame(true);
+
+      } else {
+        Alert.alert("Error", "Invalid Code ❌");
+      }
     } catch (error) {
-      Alert.alert("Error", "Something went wrong while verifying code");
+      console.log(error.response.data.message)
+      Alert.alert("Error", error.response.data.message || "Something went wrong while verifying code");
     }
   };
 
@@ -169,6 +177,17 @@ const HomeScreen = () => {
           placeholderTextColor="#fff"
         />
       </View>
+      <View style={styles.container}>
+        <Text style={styles.label}>Enter player name</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={player1}
+          onChangeText={(text)=>setPlayer1(text)}
+          placeholderTextColor="#fff"
+        />
+      </View>
+   
       {renderButton('START GAME', verifyCodeAndStart)}
       {renderButton('LOGIN AS ADMIN', () => { navigate('AdminLogin') })}
 

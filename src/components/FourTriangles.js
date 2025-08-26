@@ -82,7 +82,7 @@ const TwoTriangles = ({ player1, player2 }) => {
       <Svg height={size} width={size - 5}>
         <Polygon
           points={`0,0 ${size / 2},${size / 2} ${size},0`}
-          fill={Colors.yellow}
+          fill={Colors.green}
         />
         <Polygon
           points={`${size},0 ${size},${size} ${size / 2},${size / 2}`}
@@ -94,7 +94,7 @@ const TwoTriangles = ({ player1, player2 }) => {
         />
         <Polygon
           points={`0,0 ${size / 2},${size / 2} 0,${size}`}
-          fill={Colors.green}
+          fill={Colors.yellow}
         />
       </Svg>
 
