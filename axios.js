@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http:/127.0.0.1:3000/api", // replace with your backend URL
+  baseURL: "https://ludobackend-1-sguh.onrender.com/api", // replace with your backend URL
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
