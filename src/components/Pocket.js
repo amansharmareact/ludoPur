@@ -19,22 +19,54 @@ const Pocket = ({ color, player, data }) => {
       case 'A':
         playerNo = 'player1';
         break;
-      default:
+      case 'B':
         playerNo = 'player2';
         break;
+      case 'C':
+        playerNo = 'player3';
+        break;
+      case 'D':
+        playerNo = 'player4';
+        break;
+      default:
+        playerNo = 'player1';
+        break;
     }
+
+    // Map player to correct starting point based on their color/position
+    let startingPointIndex;
+    switch (value.id.slice(0, 1)) {
+      case 'A': // Red player (bottom-left)
+        startingPointIndex = 0; // Position 1
+        break;
+      case 'B': // Green player (top-right)  
+        startingPointIndex = 1; // Position 14 (standard Green)
+        break;
+      case 'C': // Yellow player (top-left)
+        startingPointIndex = 2; // Position 14 (corrected)
+        break;
+      case 'D': // Blue player (bottom-right)
+        startingPointIndex = 3; // Position 40
+        break;
+      default:
+        startingPointIndex = 0;
+    }
+
+    const startingPosition = startingPoints[startingPointIndex];
+
+    console.log(`🎮 Player ${value.id} (${['Red', 'Green', 'Yellow', 'Blue'][startingPointIndex]}) starting from position ${startingPosition}`);
 
     dispatch(
       updatePlayerPieceValue({
         playerNo: playerNo,
         pieceId: value.id,
-        pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1],
+        pos: startingPosition,
         travelCount: 1,
       }),
     );
-    
+
     dispatch(unfreezeDice());
- 
+
   };
 
   return (

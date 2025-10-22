@@ -40,7 +40,7 @@ const TwoTriangles = ({ player1, player2 }) => {
         player: player2,
         top: 20,
         left: -2,
-        pieceColor: Colors.yellow,
+        pieceColor: Colors.green,
         translate: 'translateY',
       },
     ],

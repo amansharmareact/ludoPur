@@ -2,21 +2,15 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  Image,
   Animated,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {deviceHeight, deviceWidth} from '../constants/Scaling';
 import Wrapper from '../components/Wrapper';
-import MenuIcon from '../assets/images/menu.png';
-import {playSound} from '../helpers/SoundUtility';
-import MenuModal from '../components/MenuModal';
 import StartGame from '../assets/images/start.png';
 import {useIsFocused} from '@react-navigation/native';
 import {
-  selectCurrentPlayerChance,
   selectDiceTouch,
   selectPlayer1,
   selectPlayer2,
@@ -117,7 +111,7 @@ const LudoBoardScreen = ({duration = 600, onTimeUp}) => {
         const {code, name} = JSON.parse(roomData);
         setPlayerData(JSON.parse(roomData));
         // Connect to socket
-        socket = io('http://127.0.0.1:3000', {
+        socket = io('http://10.246.220.185:3000', {
           transports: ['websocket'],
         });
 

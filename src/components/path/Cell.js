@@ -65,12 +65,12 @@ const Cell = ({id, color}) => {
       {piecesAtPosition?.map((piece, index) => {
         const playerNo =
           piece.id.slice(0, 1) === 'A'
-            ? 1
+            ? 1  // Red player
             : piece.id.slice(0, 1) === 'B'
-            ? 2
+            ? 2  // Green player (2-player Red vs Green)
             : piece.id.slice(0, 1) === 'C'
-            ? 3
-            : 4;
+            ? 3  // Yellow player (not used in 2-player game)
+            : 4; // Blue player (not used in 2-player game)
 
         const pieceColor =
           piece.id.slice(0, 1) === 'A'

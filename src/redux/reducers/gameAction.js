@@ -52,8 +52,27 @@ export const handleForwardThunk =
 
       let path = playerPiece.pos + 1;
 
-      if (turningPoints.includes(path) && turningPoints[playerNo - 1] === path) {
-        path = victoryStart[playerNo - 1];
+      // Map player to correct turning point based on piece ID
+      let playerIndex;
+      switch (id.slice(0, 1)) {
+        case 'A': // Red player
+          playerIndex = 0;
+          break;
+        case 'B': // Green player
+          playerIndex = 1;
+          break;
+        case 'C': // Yellow player
+          playerIndex = 2;
+          break;
+        case 'D': // Blue player
+          playerIndex = 3;
+          break;
+        default:
+          playerIndex = 0;
+      }
+
+      if (turningPoints.includes(path) && turningPoints[playerIndex] === path) {
+        path = victoryStart[playerIndex];
       }
 
       if (path === 53) {
@@ -99,9 +118,32 @@ export const handleForwardThunk =
     ) {
       const enemyPiece = finalPlot.find(piece => piece.id[0] !== id[0]);
       const enemyId = enemyPiece.id[0];
-      let no = enemyId === 'A' ? 1 : 2;
+      
+      // Map enemy piece to correct player number and starting point
+      let no, startingPointIndex;
+      switch (enemyId) {
+        case 'A': // Red player
+          no = 1;
+          startingPointIndex = 0;
+          break;
+        case 'B': // Green player
+          no = 2;
+          startingPointIndex = 1;
+          break;
+        case 'C': // Yellow player
+          no = 3;
+          startingPointIndex = 2;
+          break;
+        case 'D': // Blue player
+          no = 4;
+          startingPointIndex = 3;
+          break;
+        default:
+          no = 1;
+          startingPointIndex = 0;
+      }
 
-      let backwardPath = startingPoints[no - 1];
+      let backwardPath = startingPoints[startingPointIndex];
       let i = enemyPiece.pos;
       playSound('collide');
 

@@ -24,6 +24,7 @@ import { selectCurrentPositions } from '../redux/reducers/gameSelectors';
 import { resetGame } from '../redux/reducers/gameSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../axios';
+import { handleApiError, createRetryHandler, globalLoadingManager } from '../utils/apiErrorHandler';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ const HomeScreen = () => {
   const isFocused = useIsFocused();
   const [code, setCode] = useState("");
   const [player1, setPlayer1] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
 
   const handleChange = (text) => {
     // Allow only numbers and limit to 6 digits
@@ -137,26 +139,108 @@ const HomeScreen = () => {
   }, []);
 
   const verifyCodeAndStart = async () => {
-    if (code.length !== 6 ) {
-      Alert.alert("Invalid Code", "Please enter a 6-digit code");
+    // Input validation
+    if (code.length !== 6) {
+      Alert.alert(
+        "Invalid Code", 
+        "Please enter a 6-digit room code",
+        [{ text: "OK", style: "default" }]
+      );
       return;
     }
-    if (player1=="") {
-      Alert.alert("Invalid player name", "Please enter Names");
-      return;
-    }
-    try {
-      const response = await api.post("/join-room",{code :code,playerId:player1});
-      if (response.data && response.data.success) {
-       await AsyncStorage.setItem("roomDetails",JSON.stringify(response.data.room))
-        startGame(true);
 
+    if (!player1 || player1.trim().length === 0) {
+      Alert.alert(
+        "Invalid Player Name", 
+        "Please enter your player name",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+
+    if (player1.trim().length > 50) {
+      Alert.alert(
+        "Player Name Too Long", 
+        "Player name cannot exceed 50 characters",
+        [{ text: "OK", style: "default" }]
+      );
+      return;
+    }
+
+    // Prevent multiple simultaneous requests
+    if (isJoining) {
+      return;
+    }
+
+    setIsJoining(true);
+    globalLoadingManager.setLoading('joinRoom', true);
+
+    try {
+      console.log(`🎮 Attempting to join room: ${code} as ${player1.trim()}`);
+
+      // Create retry handler for the API call
+      const joinRoomRequest = () => api.post("/join-room", {
+        code: code,
+        playerId: player1.trim()
+      });
+
+      const retryHandler = createRetryHandler(joinRoomRequest, 2);
+      const response = await retryHandler();
+
+      if (response.data && response.data.success) {
+        console.log("✅ Successfully joined room:", response.data.room);
+        
+        // Store room details for the game
+        await AsyncStorage.setItem("roomDetails", JSON.stringify(response.data.room));
+        
+        // Show success message briefly
+        Alert.alert(
+          "Success! 🎉", 
+          `Joined room ${code} successfully!`,
+          [
+            {
+              text: "Start Game",
+              onPress: () => startGame(true),
+              style: "default"
+            }
+          ]
+        );
       } else {
-        Alert.alert("Error", "Invalid Code ❌");
+        // This shouldn't happen with our new backend, but just in case
+        handleApiError(
+          { message: "Failed to join room. Please try again." },
+          true
+        );
       }
     } catch (error) {
-      console.log(error.response.data.message)
-      Alert.alert("Error", error.response.data.message || "Something went wrong while verifying code");
+      console.error("❌ Failed to join room:", error);
+      
+      // Use centralized error handler
+      const errorInfo = handleApiError(error, true);
+      
+      // Additional specific handling for common scenarios
+      if (errorInfo.statusCode === 404) {
+        Alert.alert(
+          "Room Not Found",
+          "The room code you entered doesn't exist. Please check the code and try again.",
+          [{ text: "OK", style: "default" }]
+        );
+      } else if (errorInfo.statusCode === 400 && errorInfo.message.includes("full")) {
+        Alert.alert(
+          "Room Full",
+          "This room already has 2 players. Please try a different room.",
+          [{ text: "OK", style: "default" }]
+        );
+      } else if (errorInfo.statusCode === 400 && errorInfo.message.includes("already exists")) {
+        Alert.alert(
+          "Name Taken",
+          "A player with this name is already in the room. Please choose a different name.",
+          [{ text: "OK", style: "default" }]
+        );
+      }
+    } finally {
+      setIsJoining(false);
+      globalLoadingManager.setLoading('joinRoom', false);
     }
   };
 
@@ -181,14 +265,17 @@ const HomeScreen = () => {
         <Text style={styles.label}>Enter player name</Text>
         <TextInput
           style={styles.input}
-          keyboardType="numeric"
+          keyboardType="default"
           value={player1}
           onChangeText={(text)=>setPlayer1(text)}
           placeholderTextColor="#fff"
         />
       </View>
    
-      {renderButton('START GAME', verifyCodeAndStart)}
+      {renderButton(
+        isJoining ? 'JOINING...' : 'START GAME', 
+        isJoining ? null : verifyCodeAndStart
+      )}
       {renderButton('LOGIN AS ADMIN', () => { navigate('AdminLogin') })}
 
       <Animated.View
