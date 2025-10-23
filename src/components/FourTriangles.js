@@ -31,17 +31,17 @@ const TwoTriangles = ({ player1, player2 }) => {
     () => [
       {
         player: player1,
-        bottom: 52,
-        left: 15,
+        bottom: -5,
+        left: 17,
         pieceColor: Colors.red,
         translate: 'translateX',
       },
       {
         player: player2,
-        top: 20,
-        left: -2,
+        top: 0,
+        left: 17,
         pieceColor: Colors.green,
-        translate: 'translateY',
+        translate: 'translateX',
       },
     ],
     [player1, player2],
@@ -78,7 +78,7 @@ const TwoTriangles = ({ player1, player2 }) => {
         />
       )}
 
-      {/* Only 2 triangles (Red bottom, Green left) */}
+      {/* Only 2 triangles (Red bottom, Green top) */}
       <Svg height={size} width={size - 5}>
         <Polygon
           points={`0,0 ${size / 2},${size / 2} ${size},0`}
