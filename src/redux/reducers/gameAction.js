@@ -27,6 +27,7 @@ export const handleForwardThunk =
     const state = getState();
     const plottedPieces = selectCurrentPositions(state);
     const diceNo = selectDiceNo(state);
+    const pieceMovedFromHome = state.game.pieceMovedFromHome;
 
     const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
 
@@ -38,11 +39,20 @@ export const handleForwardThunk =
       ];
 
     dispatch(disableTouch());
-    let finalPath = piece.pos;
+    
     const beforePlayerPiece = state.game[`player${playerNo}`].find(
       item => item.id === id,
     );
     let travelCount = beforePlayerPiece.travelCount;
+    
+    // Prevent moving other pieces if a piece was already moved from home with a 6
+    if (pieceMovedFromHome && diceNo === 6) {
+      console.log(`🚫 Cannot move piece ${id} - a piece was already moved from home, consuming the 6`);
+      dispatch(unfreezeDice());
+      return;
+    }
+    
+    let finalPath = piece.pos;
 
     for (let i = 0; i < diceNo; i++) {
       const updatedPosition = getState();

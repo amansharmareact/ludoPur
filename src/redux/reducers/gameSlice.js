@@ -15,6 +15,7 @@ export const gameSlice = createSlice({
     updateDiceNo: (state, action) => {
       state.diceNo = action.payload.diceNo;
       state.isDiceRolled = true;
+      state.pieceMovedFromHome = false; // Reset when new dice is rolled
     },
     enablePileSelection: (state, action) => {
       state.touchDiceBlock = true;
@@ -24,6 +25,7 @@ export const gameSlice = createSlice({
       state.chancePlayer = action.payload.chancePlayer;
       state.touchDiceBlock = false;
       state.isDiceRolled = false;
+      state.pieceMovedFromHome = false; // Reset when turn changes
     },
     enableCellSelection: (state, action) => {
       state.touchDiceBlock = true;
@@ -32,6 +34,9 @@ export const gameSlice = createSlice({
     unfreezeDice: state => {
       state.touchDiceBlock = false;
       state.isDiceRolled = false;
+    },
+    setPieceMovedFromHome: (state, action) => {
+      state.pieceMovedFromHome = action.payload;
     },
     disableTouch: state => {
       state.touchDiceBlock = true;
@@ -80,7 +85,8 @@ export const {
   enableCellSelection,
   updatePlayerPieceValue,
   unfreezeDice,
-  disableTouch
+  disableTouch,
+  setPieceMovedFromHome
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

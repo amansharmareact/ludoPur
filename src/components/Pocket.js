@@ -6,6 +6,7 @@ import Pile from './Pile';
 import {
   unfreezeDice,
   updatePlayerPieceValue,
+  setPieceMovedFromHome,
 } from '../redux/reducers/gameSlice';
 import { startingPoints } from '../helpers/PlotData';
 
@@ -64,6 +65,10 @@ const Pocket = ({ color, player, data }) => {
         travelCount: 1,
       }),
     );
+
+    // Mark that a piece was moved from home (consumes the 6)
+    dispatch(setPieceMovedFromHome(true));
+    console.log(`🏠 Piece ${value.id} moved from home - 6 is consumed, no other moves allowed`);
 
     dispatch(unfreezeDice());
 

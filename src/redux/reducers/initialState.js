@@ -15,7 +15,7 @@ export const initialState = {
   player1: player1InitialState,
   player2: player2InitialState,
   chancePlayer: 1,
-  diceNo: 1,
+  diceNo: 0, // No dice number initially - player must roll first
   isDiceRolled: false,
   pileSelectionPlayer: -1,
   cellSelectionPlayer: -1,
@@ -23,4 +23,5 @@ export const initialState = {
   currentPositions: [],
   fireworks: false,
   winner: null,
+  pieceMovedFromHome: false, // Track if a piece was moved from home in current turn
 };

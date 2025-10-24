@@ -1,13 +1,13 @@
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import React from 'react';
-import {RFValue} from 'react-native-responsive-fontsize';
+import { RFValue } from 'react-native-responsive-fontsize';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {playSound} from '../helpers/SoundUtility';
+import { playSound } from '../helpers/SoundUtility';
 
 const iconsSize = RFValue(18);
 
-const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
+const GradientButton = ({ title, onPress, iconColor = '#d5be3e' }) => {
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity
@@ -20,8 +20,8 @@ const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
         <LinearGradient
           colors={['#4c669f', '#3b5998', '#192f6a']}
           style={styles.button}
-          start={{x: 0, y: 0}}
-          end={{x: 0, y: 1}}>
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}>
           {title == 'RESUME' ? (
             <MaterialIcons
               name="play-arrow"
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     shadowColor: '#d5be3e',
     shadowOpacity: 0.5,
-    shadowOffset: {width: 1, height: 1},
+    shadowOffset: { width: 1, height: 1 },
     shadowRadius: 10,
     borderColor: '#d5be3e',
     width: 230,

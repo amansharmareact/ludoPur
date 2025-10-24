@@ -1,9 +1,9 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LudoBoardScreen from '../screens/LudoBoardScreen';
 import SplashScreen from '../screens/SplashScreen';
 import HomeScreen from '../screens/HomeScreen';
-import {navigationRef} from '../helpers/NavigationUtil';
+import { navigationRef } from '../helpers/NavigationUtil';
 import AdminLogin from '../screens/AdminLogin';
 import AdminDashboard from '../screens/AdminDashboard';
 
@@ -32,14 +32,14 @@ const Navigation = () => {
             animation: 'fade',
           }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="AdminDashboard"
           component={AdminDashboard}
           options={{
             animation: 'fade',
           }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="AdminLogin"
           component={AdminLogin}
           options={{

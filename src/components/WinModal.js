@@ -13,14 +13,42 @@ import HeartGirl from '../assets/animation/girl.json';
 import Trophy from '../assets/animation/trophy.json';
 import Firework from '../assets/animation/firework.json';
 import Pile from './Pile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WinModal = ({winner}) => {
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(!!winner);
+  const [winnerName, setWinnerName] = useState('');
 
   useEffect(() => {
     setVisible(!!winner);
+    
+    // Get winner name from AsyncStorage
+    if (winner) {
+      getWinnerName(winner);
+    }
   }, [winner]);
+
+  const getWinnerName = async (playerNumber) => {
+    try {
+      const roomData = await AsyncStorage.getItem('roomDetails');
+      if (roomData) {
+        const parsedData = JSON.parse(roomData);
+        const playerName = parsedData?.players?.[playerNumber - 1]?.name;
+        if (playerName) {
+          setWinnerName(playerName);
+          console.log(`🏆 Winner: ${playerName} (Player ${playerNumber})`);
+        } else {
+          setWinnerName(`Player ${playerNumber}`);
+        }
+      } else {
+        setWinnerName(`Player ${playerNumber}`);
+      }
+    } catch (error) {
+      console.error('Error getting winner name:', error);
+      setWinnerName(`Player ${playerNumber}`);
+    }
+  };
 
   const handleNewGame = () => {
     dispatch(resetGame());
@@ -28,9 +56,20 @@ const WinModal = ({winner}) => {
     playSound('game_start');
   };
 
-  const handleHome = () => {
+  const handleHome = async () => {
+    console.log('🏠 Navigating to Home Screen');
+    
+    try {
+      // Clear room details when going home
+      await AsyncStorage.removeItem('roomDetails');
+      console.log('🧹 Room details cleared');
+    } catch (error) {
+      console.error('Error clearing room details:', error);
+    }
+    
     dispatch(resetGame());
     dispatch(announceWinner(null));
+    playSound('home'); // Play home sound if available
     resetAndNavigate('HomeScreen');
   };
 
@@ -53,7 +92,7 @@ const WinModal = ({winner}) => {
           </View>
 
           <Text style={styles.congratsText}>
-            🥳 Congratulations! PLAYER {winner}
+            🥳 Congratulations! {winnerName ? winnerName.toUpperCase() : `PLAYER ${winner}`}
           </Text>
           <LottieView
             autoPlay
@@ -70,8 +109,10 @@ const WinModal = ({winner}) => {
             style={styles.fireworkAnimation}
           />
 
-          <GradientButton title="NEW GAME" onPress={handleNewGame} />
-          <GradientButton title="HOME" onPress={handleHome} />
+          <View style={styles.buttonContainer}>
+            {/* <GradientButton title="NEW GAME" onPress={handleNewGame} /> */}
+            <GradientButton title="🏠 GO HOME" onPress={handleHome} />
+          </View>
         </View>
       </LinearGradient>
 
@@ -103,6 +144,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
   pileContainer: {
     width: 90,
     height: 20,
@@ -111,10 +158,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   congratsText: {
-    fontSize: 18,
-    color: 'white',
-    fontFamily: 'Philosopher-Bold',
+    fontSize: 20,
+    color: 'gold',
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginTop: 10,
+    marginHorizontal: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10,
   },
   trophyAnimation: {
     height: 140,

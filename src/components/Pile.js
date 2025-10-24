@@ -12,6 +12,7 @@ import {useSelector} from 'react-redux';
 import {
   selectCellSelection,
   selectDiceNo,
+  selectDiceRolled,
   selectPocketPileSelection,
 } from '../redux/reducers/gameSelectors';
 import {Colors} from '../constants/Colors';
@@ -26,16 +27,17 @@ const Pile = ({cell, pieceId, color, player, onPress}) => {
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
+  const isDiceRolled = useSelector(selectDiceRolled);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
 
   const isPileEnabled = useMemo(
-    () => player === currentPlayerPileSelection,
-    [player, currentPlayerPileSelection],
+    () => player === currentPlayerPileSelection && isDiceRolled,
+    [player, currentPlayerPileSelection, isDiceRolled],
   );
 
   const isCellEnabled = useMemo(
-    () => player === currentPlayerCellSelection,
-    [player, currentPlayerCellSelection],
+    () => player === currentPlayerCellSelection && isDiceRolled,
+    [player, currentPlayerCellSelection, isDiceRolled],
   );
 
   const isForwardable = useCallback(() => {

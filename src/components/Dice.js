@@ -38,7 +38,7 @@ const Dice = React.memo(
       state => state.game[`player${currentPlayerChance}`],
     );
     const pileIcon = BackgroundImage.GetImage(color);
-    const diceIcon = BackgroundImage.GetImage(diceNo);
+    const diceIcon = BackgroundImage.GetImage(diceNo) || BackgroundImage.GetImage(1); // Default to 1 if no dice rolled
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     const arrowAnim = useRef(new Animated.Value(0)).current;
@@ -157,7 +157,13 @@ const Dice = React.memo(
                       disabled={isDiceRolled}
                       activeOpacity={0.4}
                       onPress={handleDicePress}>
-                      <Image source={diceIcon} style={styles.dice} />
+                      {diceNo === 0 ? (
+                        <View style={[styles.dice, styles.placeholderDice]}>
+                          <Text style={styles.placeholderText}>?</Text>
+                        </View>
+                      ) : (
+                        <Image source={diceIcon} style={styles.dice} />
+                      )}
                     </TouchableOpacity>
                   )}
                 </>
@@ -222,6 +228,19 @@ const styles = StyleSheet.create({
   dice: {
     height: 45,
     width: 45,
+  },
+  placeholderDice: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#666',
   },
   rollingDice: {
     height: 80,
